@@ -2,6 +2,7 @@
 NAME := ght-gen
 PKG := github.com/petems/$(NAME)
 GIT_COMMIT := $(shell git log -1 --pretty=format:"%h" .)
+INT_VERSION := $(shell echo "INTEGRATION_TESTS")
 VERSION := $(shell grep "const Version " main.go | sed -E 's/.*"(.+)"$$/\1/')
 
 .PHONY: all
@@ -43,6 +44,12 @@ clean: ## Cleanup any build binaries or packages
 test: ## Runs the go tests
 	@echo "+ $@"
 	@go test ./...
+
+.PHONY: int_build
+int_build:
+	go build -ldflags "-X \"cmd.gitCommit=$(INT_VERSION)\"" \
+		-o "./bin/$(NAME)-int-testing" \
+		./main.go
 
 .PHONY: install
 install: ## Installs the executable or package
